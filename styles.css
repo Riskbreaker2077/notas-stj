@@ -99,10 +99,14 @@ body {
   justify-content: center;
 }
 
-.crest-svg {
+.crest-img {
   width: 68px;
   height: 68px;
-  filter: drop-shadow(0 4px 8px rgba(123, 45, 67, 0.22));
+  object-fit: contain;
+  border-radius: 14px;
+  background: #fff;
+  border: 2px solid #C59B27;
+  box-shadow: 0 4px 8px rgba(123, 45, 67, 0.22);
 }
 
 .crest-badge {

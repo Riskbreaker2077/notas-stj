@@ -9,8 +9,12 @@ Fuentes:
     cada estudiante necesita en P3 por área y asignatura — VALOR OFICIAL,
     se publica tal cual (semántica verificada: coincide con la fórmula
     SIEE 2.1.17 definitiva = P1*30% + P2*30% + P3*40%, aprueba >= 3.0).
-  - Base local estudiantes_stj.db: código (id_puntoedu) + número de
-    documento. El documento NUNCA se publica: solo SHA-256(salt+doc).
+  - Hoja Drive "BD - STJ - 2026" (Main) → _fuente/mapa_codigos.json:
+    CÓDIGO DEL PORTAL ESTUDIANTES (el del login, NO el id interno de
+    PuntoEdu). Alias 115 = Giraldo Taba Juanita (fila de la hoja quedó
+    como placeholder 'Juanita Juanita').
+  - Base local estudiantes_stj.db: número de documento (contraseña).
+    El documento NUNCA se publica: solo SHA-256(salt+doc).
 
 Uso:
     python3 scripts/generar_data.py \
@@ -119,6 +123,9 @@ def main():
                       norm(r["nombre_completo"] or "")):
             db_by_nombre.setdefault(clave, r)
 
+    with open(os.path.join(BASE, "_fuente", "mapa_codigos.json"), encoding="utf-8") as fh:
+        mapa_codigos = json.load(fh)
+
     salt = ""
     out_path = os.path.join(BASE, "data.js")
     if os.path.exists(out_path):
@@ -128,11 +135,15 @@ def main():
     salt = salt or uuid.uuid4().hex
 
     import hashlib
-    estudiantes, problemas, sin_nota, desajustes = [], [], [], []
+    estudiantes, problemas, sin_nota, desajustes, logins = [], [], [], [], []
     for nombre in sorted(p1):
         row = db_by_nombre.get(norm(nombre))
-        if row is None or not row["num_doc"] or not row["id_puntoedu"]:
+        if row is None or not row["num_doc"]:
             problemas.append(f"sin cruce en base local: {nombre}")
+            continue
+        codigo = mapa_codigos.get(nombre)
+        if not codigo:
+            problemas.append(f"sin código de portal (hoja BD): {nombre}")
             continue
         nn = norm(nombre)
         if nn not in nec:
@@ -155,7 +166,7 @@ def main():
                 if abs(calc - req) > 0.05:
                     desajustes.append(f"{nombre.split()[0]}·{sigla}: doc={req} calc={calc}")
         est = {
-            "c": str(row["id_puntoedu"]),
+            "c": codigo,
             "n": f'{(row["nombres"] or "").title()} {(row["apellido"] or "").title()}',
             "h": h, "ar": ar, "subs": subs,
         }
@@ -163,6 +174,7 @@ def main():
         if aviso:
             est["aviso"] = aviso
         estudiantes.append(est)
+        logins.append((est["n"], codigo, str(row["num_doc"])))
     if len({e["c"] for e in estudiantes}) != len(estudiantes):
         problemas.append("códigos duplicados")
 
@@ -200,6 +212,22 @@ def main():
                 continue
             est["asegurada" if req <= 0 else "recuperacion" if req > 5 else "alcanzable"] += 1
     print("estados según documento (estudiante×área):", est)
+
+    # ---------- logins (FUERA del repo público) ----------
+    logins_path = os.path.join(os.path.dirname(BASE), "logins-10A.md")
+    lineas = [
+        "# Logins plataforma de notas · 10°A (corte 2026-11-04)", "",
+        "Código = el del portal estudiantes (hoja BD - STJ - 2026, pestaña Main).",
+        "Contraseña = número de documento.",
+        "⚠️ Este archivo NO va al repo público.", "",
+        "| # | Estudiante | Código | Contraseña (documento) |",
+        "|---|---|---|---|",
+    ]
+    for i, (n, c, d) in enumerate(logins, 1):
+        lineas.append(f"| {i} | {n} | {c} | {d} |")
+    with open(logins_path, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lineas) + "\n")
+    print(f"-> {logins_path} ({len(logins)} logins)")
     print("->", out_path)
 
 
