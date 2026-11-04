@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mi nota para pasar · 10A · STJ</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+<main class="wrap">
+  <!-- Acceso -->
+  <section id="login-view" class="card">
+    <div class="brand">🎓</div>
+    <h1>¿Cuánto necesito para pasar?</h1>
+    <p class="sub">10°A · IE Santa Teresa de Jesús</p>
+    <form id="login-form" autocomplete="off">
+      <label for="codigo">Código del estudiante</label>
+      <input id="codigo" inputmode="numeric" placeholder="Tu código del portal" required>
+      <label for="doc">Contraseña: número de documento</label>
+      <input id="doc" type="password" inputmode="numeric" placeholder="Sin puntos ni espacios" required>
+      <button type="submit">Consultar</button>
+      <p id="login-error" class="error" hidden>Código o documento incorrecto. Vuelve a intentarlo.</p>
+    </form>
+    <p class="hint">Tu documento solo se usa para entrar: no queda guardado en ningún lado de este dispositivo.</p>
+  </section>
+
+  <!-- Resultado -->
+  <section id="result-view" class="card" hidden>
+    <header class="topbar">
+      <div>
+        <h1 id="student-name"></h1>
+        <p class="sub" id="student-meta"></p>
+      </div>
+      <button id="logout" type="button">Salir</button>
+    </header>
+
+    <div id="summary" class="chips"></div>
+
+    <table class="grades" aria-label="Notas por área">
+      <thead>
+        <tr><th>Área</th><th>P1</th><th>P2</th><th>Necesitas en P3</th></tr>
+      </thead>
+      <tbody id="grades-body"></tbody>
+    </table>
+
+    <div class="legend">
+      <p><span class="dot ok"></span> Asegurada: pasas aunque te vaya regular en P3.</p>
+      <p><span class="dot warn"></span> Con esa nota o más en P3, el área queda aprobada (definitiva ≥ 3.0).</p>
+      <p><span class="dot bad"></span> Ni con 5.0 llegas a 3.0: se define en la recuperación final del año.</p>
+    </div>
+
+    <footer class="foot">
+      <p>Definitiva del área = P1×30% + P2×30% + P3×40% (SIEE 2.1.17) · se aprueba con <strong>3.0 o más</strong>.</p>
+      <p id="foot-meta"></p>
+      <p>Dudas o diferencias: habla con tu director de grupo.</p>
+    </footer>
+  </section>
+</main>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
