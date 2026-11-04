@@ -4,57 +4,150 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7B2D43">
 <title>Mi nota para pasar · 10A · STJ</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body>
 <main class="wrap">
-  <!-- Acceso -->
-  <section id="login-view" class="card">
-    <div class="brand">🎓</div>
-    <h1>¿Cuánto necesito para pasar?</h1>
-    <p class="sub">10°A · IE Santa Teresa de Jesús</p>
-    <form id="login-form" autocomplete="off">
-      <label for="codigo">Código del estudiante</label>
-      <input id="codigo" inputmode="numeric" placeholder="Tu código del portal" required>
-      <label for="doc">Contraseña: número de documento</label>
-      <input id="doc" type="password" inputmode="numeric" placeholder="Sin puntos ni espacios" required>
-      <button type="submit">Consultar</button>
-      <p id="login-error" class="error" hidden>Código o documento incorrecto. Vuelve a intentarlo.</p>
+  <!-- Vista de Acceso (Login) -->
+  <section id="login-view" class="card login-card" aria-labelledby="login-title">
+    <div class="inst-header">
+      <div class="brand-crest" aria-hidden="true">
+        <svg class="crest-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 4L8 14V30C8 46.2 18.2 59.4 32 63C45.8 59.4 56 46.2 56 30V14L32 4Z" fill="#7B2D43" stroke="#C59B27" stroke-width="2.5"/>
+          <path d="M32 9L13 17V30C13 43.3 21.1 54.4 32 57.7C42.9 54.4 51 43.3 51 30V17L32 9Z" stroke="#F2E2E5" stroke-width="1" stroke-opacity="0.45"/>
+          <path d="M32 17V45M22 27H42" stroke="#C59B27" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="27" r="3.5" fill="#F2E2E5"/>
+        </svg>
+        <span class="crest-badge">🎓</span>
+      </div>
+      <p class="inst-tag">I.E. Santa Teresa de Jesús · Armenia</p>
+      <h1 id="login-title">¿Cuánto necesito para pasar?</h1>
+      <p class="sub">Consulta académica individual · Grado <strong>10°A</strong></p>
+    </div>
+
+    <form id="login-form" autocomplete="off" novalidate>
+      <div class="field">
+        <label for="codigo">Código del estudiante</label>
+        <div class="input-group">
+          <span class="input-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </span>
+          <input id="codigo" name="codigo" type="text" inputmode="numeric" placeholder="Tu código del portal PuntoEdu" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="doc">Contraseña: número de documento</label>
+        <div class="input-group">
+          <span class="input-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </span>
+          <input id="doc" name="doc" type="password" inputmode="numeric" placeholder="Sin puntos ni espacios" required>
+          <button type="button" id="toggle-doc" class="icon-btn" aria-label="Mostrar u ocultar número de documento" title="Mostrar u ocultar">
+            <svg id="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">
+        <span>Consultar mis notas</span>
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+      <div id="login-error" class="error-box" role="alert" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>No pudimos validar tus datos. Verifica que tu código y documento estén escritos sin puntos ni espacios.</span>
+      </div>
     </form>
-    <p class="hint">Tu documento solo se usa para entrar: no queda guardado en ningún lado de este dispositivo.</p>
+
+    <p class="hint">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>Tu documento solo se usa para verificar tu acceso: no queda guardado en ningún lado de este dispositivo.</span>
+    </p>
   </section>
 
-  <!-- Resultado -->
-  <section id="result-view" class="card" hidden>
+  <!-- Vista de Resultados -->
+  <section id="result-view" class="card result-card" aria-labelledby="student-name" hidden>
     <header class="topbar">
-      <div>
+      <div class="student-info">
+        <span class="school-pill">I.E. Santa Teresa de Jesús</span>
         <h1 id="student-name"></h1>
         <p class="sub" id="student-meta"></p>
       </div>
-      <button id="logout" type="button">Salir</button>
+      <button id="logout" type="button" class="btn-logout" aria-label="Cerrar sesión y salir">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Salir</span>
+      </button>
     </header>
 
-    <div id="summary" class="chips"></div>
+    <div id="summary" class="chips" aria-label="Resumen de estado por áreas"></div>
 
-    <table class="grades" aria-label="Notas por área">
-      <thead>
-        <tr><th>Área</th><th>P1</th><th>P2</th><th>Necesitas en P3</th></tr>
-      </thead>
-      <tbody id="grades-body"></tbody>
-    </table>
-
-    <div class="legend">
-      <p><span class="dot ok"></span> Asegurada: pasas aunque te vaya regular en P3.</p>
-      <p><span class="dot warn"></span> Con esa nota o más en P3, el área queda aprobada (definitiva ≥ 3.0).</p>
-      <p><span class="dot bad"></span> Ni con 5.0 llegas a 3.0: se define en la recuperación final del año.</p>
+    <div class="table-container">
+      <table class="grades" aria-label="Notas por área y sub-asignaturas">
+        <thead>
+          <tr>
+            <th scope="col" class="col-area">Área</th>
+            <th scope="col" class="col-num">P1</th>
+            <th scope="col" class="col-num">P2</th>
+            <th scope="col" class="col-req">Necesitas en P3</th>
+          </tr>
+        </thead>
+        <tbody id="grades-body"></tbody>
+      </table>
     </div>
 
+    <details class="help-collapsible">
+      <summary class="help-summary">
+        <span class="help-title">
+          <span class="help-icon" aria-hidden="true">💡</span>
+          <span>¿Cómo interpretar esta información?</span>
+        </span>
+        <svg class="chevron" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </summary>
+      <div class="help-content">
+        <ul class="help-list">
+          <li>Tu definitiva de cada área = P1×30% + P2×30% + P3×40%, y se aprueba con 3.0 o más (SIEE institucional).</li>
+          <li>'Necesitas en P3' es la nota mínima que debes sacar en el tercer periodo para que tu definitiva llegue a 3.0. Ese valor viene del consolidado oficial de PuntoEdu (corte 04/11/2026).</li>
+          <li><strong>Verde · Asegurada:</strong> aunque en P3 no te vaya bien, el área ya queda aprobada.</li>
+          <li><strong>Ámbar · Por asegurar:</strong> saca esa nota o más en P3 y apruebas el área.</li>
+          <li><strong>Rojo · Sin posibilidad:</strong> ni con 5.0 llegas a 3.0; el área se define en la recuperación final del año.</li>
+          <li>Una nota roja en P1 o P2 significa que perdiste ese periodo; lo decisivo ahora es P3.</li>
+          <li>Un '—' indica que esa nota no está cargada en el sistema; si te corresponde, habla con tu director de grupo.</li>
+        </ul>
+      </div>
+    </details>
+
     <footer class="foot">
-      <p>Definitiva del área = P1×30% + P2×30% + P3×40% (SIEE 2.1.17) · se aprueba con <strong>3.0 o más</strong>.</p>
-      <p id="foot-meta"></p>
-      <p>Dudas o diferencias: habla con tu director de grupo.</p>
+      <p class="foot-formula">Definitiva del área = <strong>P1×30% + P2×30% + P3×40%</strong> (SIEE 2.1.17) · se aprueba con <strong>3.0 o más</strong>.</p>
+      <p id="foot-meta" class="foot-meta"></p>
+      <p class="foot-contact">Dudas o diferencias: habla con tu director de grupo.</p>
     </footer>
   </section>
 </main>

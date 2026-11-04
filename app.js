@@ -7,6 +7,7 @@
   const $ = (id) => document.getElementById(id);
   const loginView = $("login-view"), resultView = $("result-view");
   const form = $("login-form"), err = $("login-error");
+  const toggleDocBtn = $("toggle-doc"), docInput = $("doc");
 
   const sha256hex = async (s) => {
     const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -18,24 +19,33 @@
 
   function estadoCell(req) {
     if (req === null || req === undefined) return { cls: "gris", req: "—", txt: "Sin dato" };
-    if (req <= 0) return { cls: "ok", req: "0.0", txt: "Asegurada ✓" };
-    if (req > 5) return { cls: "bad", req: fmt(req), txt: "Ni con 5.0 · recuperación final" };
-    return { cls: "warn", req: fmt(req), txt: "Con " + fmt(req) + " o más, pasas" };
+    if (req <= 0) return { cls: "ok", req: "0.0", txt: "Asegurada" };
+    if (req > 5) return { cls: "bad", req: fmt(req), txt: "Recuperación final" };
+    return { cls: "warn", req: fmt(req), txt: "Con " + fmt(req) + " o más pasas" };
   }
 
   function fila(nombre, s, sub) {
     const e = estadoCell(s ? s[2] : null);
     const p1 = s ? s[0] : null, p2 = s ? s[1] : null;
-    const tdNota = (v) => (v === null || v === undefined) ? '<span class="na">—</span>' : fmt(v);
-    return '<tr class="' + (sub ? "subrow" : "") + '"><td>' + nombre + "</td>" +
+    const tdNota = (v) => (v === null || v === undefined)
+      ? '<span class="na">—</span>'
+      : '<span class="nota-val">' + fmt(v) + "</span>";
+    const labelHtml = sub
+      ? '<span class="sub-name"><span class="sub-arrow" aria-hidden="true">↳</span><span>' + nombre + "</span></span>"
+      : '<span class="area-name">' + nombre + "</span>";
+
+    return '<tr class="' + (sub ? "subrow" : "arearow") + '">' +
+      "<td>" + labelHtml + "</td>" +
       '<td class="nota' + (baja(p1) ? " baja" : "") + '">' + tdNota(p1) + "</td>" +
       '<td class="nota' + (baja(p2) ? " baja" : "") + '">' + tdNota(p2) + "</td>" +
-      '<td><span class="req ' + e.cls + '">' + e.req + '</span><span class="estado ' + e.cls + '">' + e.txt + "</span></td></tr>";
+      '<td><div class="req-wrap"><span class="req ' + e.cls + '">' + e.req + '</span><span class="estado ' + e.cls + '">' + e.txt + "</span></div></td>" +
+      "</tr>";
   }
 
   function render(est) {
     $("student-name").textContent = est.n;
-    $("student-meta").textContent = "Grupo " + D.meta.grupo + " · Código " + est.c;
+    const sedeTxt = D.meta && D.meta.sede ? " · " + D.meta.sede : "";
+    $("student-meta").textContent = "Grupo " + D.meta.grupo + sedeTxt + " · Código " + est.c;
 
     const prev = $("aviso-banner");
     if (prev) prev.remove();
@@ -43,6 +53,7 @@
       const div = document.createElement("div");
       div.id = "aviso-banner";
       div.className = "aviso";
+      div.setAttribute("role", "status");
       div.textContent = est.aviso;
       $("summary").insertAdjacentElement("beforebegin", div);
     }
@@ -63,7 +74,7 @@
     let html = "";
     for (const a of D.areas) {
       html += fila(a.n, est.ar[a.s], false);
-      for (const sub of (a.subs || [])) html += fila("↳ " + sub.n, est.subs[sub.s], true);
+      for (const sub of (a.subs || [])) html += fila(sub.n, est.subs[sub.s], true);
     }
     $("grades-body").innerHTML = html;
 
@@ -82,6 +93,14 @@
     return D.estudiantes.find((e) => e.c === codigo && hs.indexOf(e.h) >= 0) || null;
   }
 
+  if (toggleDocBtn && docInput) {
+    toggleDocBtn.addEventListener("click", () => {
+      const isPwd = docInput.type === "password";
+      docInput.type = isPwd ? "text" : "password";
+      toggleDocBtn.setAttribute("aria-pressed", String(isPwd));
+    });
+  }
+
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     err.hidden = true;
@@ -95,6 +114,7 @@
     sessionStorage.removeItem("stj_codigo");
     resultView.hidden = true;
     loginView.hidden = false;
+    if (docInput) docInput.type = "password";
     form.reset();
   });
 
